@@ -1,0 +1,40 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  html {
+    direction: rtl;
+  }
+  body {
+    font-family: 'Tajawal', sans-serif;
+    background-color: #f8fafc;
+    color: #0f172a;
+    -webkit-font-smoothing: antialiased;
+  }
+  h1, h2, h3, h4, h5, h6 {
+    font-family: 'Cairo', sans-serif;
+    font-weight: 700;
+  }
+}
+
+@layer components {
+  .btn-primary {
+    @apply inline-flex items-center justify-center gap-2 rounded-lg bg-primary-700 px-6 py-3 text-white font-semibold transition-all duration-200 hover:bg-primary-800 hover:shadow-card focus:outline-none focus:ring-2 focus:ring-primary-400 focus:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed;
+  }
+  .btn-secondary {
+    @apply inline-flex items-center justify-center gap-2 rounded-lg bg-white px-6 py-3 text-primary-700 font-semibold border border-primary-200 transition-all duration-200 hover:bg-primary-50 hover:border-primary-300 focus:outline-none focus:ring-2 focus:ring-primary-400 focus:ring-offset-2;
+  }
+  .input-field {
+    @apply w-full rounded-lg border border-gray-200 bg-white px-4 py-3 text-gray-900 placeholder-gray-400 transition-all duration-200 focus:border-primary-500 focus:outline-none focus:ring-2 focus:ring-primary-200;
+  }
+  .card {
+    @apply rounded-xl bg-white shadow-card border border-gray-50;
+  }
+  .nav-link {
+    @apply flex items-center gap-3 rounded-lg px-4 py-3 text-gray-600 font-medium transition-all duration-200 hover:bg-primary-50 hover:text-primary-700;
+  }
+  .nav-link-active {
+    @apply bg-primary-700 text-white hover:bg-primary-800 hover:text-white shadow-soft;
+  }
+}
