@@ -70,9 +70,17 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         data: { full_name: fullName, role },
       },
     });
-    if (error) return { error: error.message };
+    if (error) {
+      if (error.message.toLowerCase().includes('already registered')) {
+        return { error: 'هذا البريد الإلكتروني مسجل بالفعل' };
+      }
+      return { error: error.message };
+    }
     if (!data.user) return { error: 'تعذر إنشاء الحساب' };
 
+    // The database trigger `handle_new_user` already created a profile row
+    // from raw_user_meta_data. Update it with the exact values the user entered
+    // so the role and full_name are authoritative (not dependent on metadata).
     const { error: profileError } = await supabase.from('profiles').upsert({
       id: data.user.id,
       full_name: fullName,
@@ -85,7 +93,32 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
   const signIn: AuthContextValue['signIn'] = async (email, password) => {
     const { data, error } = await supabase.auth.signInWithPassword({ email, password });
-    if (error) return { error: error.message, profile: null };
+    if (error) {
+      // Supabase returns a generic "Invalid login credentials" for both
+      // wrong password and non-existing email (by design, for security).
+      // We check the profiles table to give the user a clearer Arabic message.
+      if (error.message.toLowerCase().includes('invalid login credentials')) {
+        const { data: existingUser } = await supabase
+          .rpc('lookup_user_by_email', {
+            p_email: email.trim().toLowerCase(),
+            p_role: 'manager',
+          });
+        let found = existingUser && existingUser.length > 0;
+        if (!found) {
+          const { data: empUser } = await supabase
+            .rpc('lookup_user_by_email', {
+              p_email: email.trim().toLowerCase(),
+              p_role: 'employee',
+            });
+          found = empUser && empUser.length > 0;
+        }
+        if (!found) {
+          return { error: 'لا يوجد حساب بهذا البريد الإلكتروني', profile: null };
+        }
+        return { error: 'كلمة المرور غير صحيحة', profile: null };
+      }
+      return { error: error.message, profile: null };
+    }
 
     // Fetch profile immediately so the caller can redirect by role
     const { data: profileData, error: profileError } = await supabase
