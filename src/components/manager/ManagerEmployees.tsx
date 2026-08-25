@@ -48,25 +48,18 @@ export default function ManagerEmployees() {
       return;
     }
 
-    const { data: empData, error: empError } = await supabase
-      .from('profiles')
-      .select('id, full_name, email, role')
-      .eq('email', normalizedEmail)
-      .maybeSingle();
+    const { data: empRows, error: empError } = await supabase
+      .rpc('lookup_employee_for_manager', { p_email: normalizedEmail });
 
-    if (empError || !empData) {
-      setError('لا يوجد حساب بهذا البريد الإلكتروني');
+    if (empError || !empRows || empRows.length === 0) {
+      setError('لم يتم العثور على البريد الإلكتروني');
       setAdding(false);
       return;
     }
 
-    if (empData.role !== 'employee') {
-      setError('هذا الحساب ليس موظفًا');
-      setAdding(false);
-      return;
-    }
+    const employee = empRows[0] as { id: string; full_name: string; email: string; role: string };
 
-    const alreadyAssigned = assignments.some((a) => a.employee_id === empData.id);
+    const alreadyAssigned = assignments.some((a) => a.employee_id === employee.id);
     if (alreadyAssigned) {
       setError('هذا الموظف مُعين لديك بالفعل');
       setAdding(false);
@@ -75,7 +68,7 @@ export default function ManagerEmployees() {
 
     const { error: insertError } = await supabase.from('assignments').insert({
       manager_id: user!.id,
-      employee_id: empData.id,
+      employee_id: employee.id,
     });
 
     if (insertError) {

@@ -1,10 +1,11 @@
 import { useState } from 'react';
-import { ClipboardList, Users, Settings, FileBarChart, Inbox } from 'lucide-react';
-import { DashboardLayout, PlaceholderSection, type NavItem } from '@/components/DashboardLayout';
+import { ClipboardList, Users, Settings, ChartBar as FileBarChart, Inbox } from 'lucide-react';
+import { DashboardLayout, type NavItem } from '@/components/DashboardLayout';
 import { useAuth } from '@/context/AuthContext';
 import ManagerEmployees from '@/components/manager/ManagerEmployees';
 import ManagerInitiatives from '@/components/manager/ManagerInitiatives';
 import ManagerConnectionRequests from '@/components/manager/ManagerConnectionRequests';
+import ManagerSettings from '@/components/manager/ManagerSettings';
 
 const navItems: NavItem[] = [
   { key: 'initiatives', label: 'المبادرات', icon: <ClipboardList className="h-5 w-5" /> },
@@ -26,13 +27,7 @@ export default function ManagerDashboard() {
       case 'requests':
         return <ManagerConnectionRequests />;
       case 'settings':
-        return (
-          <PlaceholderSection
-            icon={<Settings className="h-8 w-8" />}
-            title="الشعارات والإعدادات"
-            description="إدارة الشعارات الرسمية وإعدادات النظام العامة."
-          />
-        );
+        return <ManagerSettings />;
       default:
         return null;
     }

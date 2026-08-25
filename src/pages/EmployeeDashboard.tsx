@@ -1,6 +1,6 @@
 import { useState } from 'react';
-import { FolderOpen, PlusCircle, FileBarChart, Link2 } from 'lucide-react';
-import { DashboardLayout, PlaceholderSection, type NavItem } from '@/components/DashboardLayout';
+import { FolderOpen, CirclePlus as PlusCircle, ChartBar as FileBarChart, Link2 } from 'lucide-react';
+import { DashboardLayout, type NavItem } from '@/components/DashboardLayout';
 import { useAuth } from '@/context/AuthContext';
 import MyInitiatives from '@/components/employee/MyInitiatives';
 import InitiativeForm from '@/components/employee/InitiativeForm';

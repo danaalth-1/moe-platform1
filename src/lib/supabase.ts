@@ -95,3 +95,20 @@ export const CONNECTION_STATUS_LABELS: Record<ConnectionRequestStatus, string> =
 export const STATUS_LABELS: Record<string, string> = {
   under_review: 'قيد المراجعة',
 };
+
+export interface ManagerLogo {
+  id: string;
+  manager_id: string;
+  storage_path: string;
+  public_url: string;
+  file_name: string;
+  selected_for_pdf: boolean;
+  created_at: string;
+}
+
+export interface LookupUser {
+  id: string;
+  full_name: string;
+  email: string;
+  role: UserRole;
+}

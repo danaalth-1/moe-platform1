@@ -1,5 +1,5 @@
 import { useEffect, useState, type FormEvent } from 'react';
-import { Mail, AlertCircle, Loader2, UserCheck, Clock, XCircle, Link2 } from 'lucide-react';
+import { Mail, CircleAlert as AlertCircle, Loader as Loader2, UserCheck, Clock, Circle as XCircle, Link2 } from 'lucide-react';
 import { supabase, type ConnectionRequest } from '@/lib/supabase';
 import { useAuth } from '@/context/AuthContext';
 import { CONNECTION_STATUS_LABELS } from '@/lib/supabase';
@@ -48,27 +48,20 @@ export default function EmployeeConnection() {
       return;
     }
 
-    const { data: mgrData, error: mgrError } = await supabase
-      .from('profiles')
-      .select('id, full_name, email, role')
-      .eq('email', normalizedEmail)
-      .maybeSingle();
+    const { data: mgrRows, error: mgrError } = await supabase
+      .rpc('lookup_manager_for_employee', { p_email: normalizedEmail });
 
-    if (mgrError || !mgrData) {
-      setError('لا يوجد حساب بهذا البريد الإلكتروني');
+    if (mgrError || !mgrRows || mgrRows.length === 0) {
+      setError('لم يتم العثور على البريد الإلكتروني');
       setSending(false);
       return;
     }
 
-    if (mgrData.role !== 'manager') {
-      setError('هذا الحساب ليس مديرًا');
-      setSending(false);
-      return;
-    }
+    const manager = mgrRows[0] as { id: string; full_name: string; email: string; role: string };
 
     const { error: insertError } = await supabase.from('connection_requests').insert({
       employee_id: user!.id,
-      manager_id: mgrData.id,
+      manager_id: manager.id,
       status: 'pending',
     });
 
